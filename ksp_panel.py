@@ -10,6 +10,7 @@ import numpy as np
 import time
 import krpc
 
+from telemetry import Telemetry
 from mfd.orbital_mfd import OrbitalMFD
 
 
@@ -30,7 +31,7 @@ class Interface(QMainWindow):
         self.ksp_thread = QThread()
         self.ksp_client = KrpcClient(ksp_ip)
         self.ksp_client.moveToThread(self.ksp_thread)
-        
+
         self.krpc_client_begin_connect.connect(self.ksp_client.connect_to_ksp)
         self.ksp_client.telemetry_updated.connect(self.telemetry_updated)
 
@@ -39,7 +40,7 @@ class Interface(QMainWindow):
         self.krpc_client_begin_connect.emit()
 
 
-    @pyqtSlot(dict)
+    @pyqtSlot(Telemetry)
     def telemetry_updated(self, telemetry_data):
         self.orbital.update_mfd(telemetry_data)
 
@@ -48,7 +49,7 @@ class Interface(QMainWindow):
 class KrpcClient(QObject):
     ksp_connected = pyqtSignal()
     ksp_disconnected = pyqtSignal()
-    telemetry_updated = pyqtSignal(dict)
+    telemetry_updated = pyqtSignal(Telemetry)
 
     def __init__(self, server_address, **kwargs):
         super(KrpcClient, self).__init__(**kwargs)
@@ -58,7 +59,7 @@ class KrpcClient(QObject):
         self.ksp_is_connected = False
         self.ksp_current_game_scene = None
         self.as_active_vessel = False
-        self.telemetry = {}
+        self.telemetry = Telemetry()
 
          # initialize update timers
         self._short_term_scheduler = QTimer()
@@ -94,46 +95,41 @@ class KrpcClient(QObject):
                 # otherwise, unset the active vessel and telemetry
                 self.as_active_vessel = False
 
-    
+
     def init_telemetry(self):
         self.space_center = self.ksp_conn.space_center
         self.as_active_vessel = True
-        self.telemetry = {}
+        self.telemetry = Telemetry()
 
 
     def update_telemetry(self):
         orbit = self.space_center.active_vessel.orbit
         #self.telemetry['active_vessel_id'] = self.current_vessel._object_id
-        self.telemetry['ut'] = self.space_center.ut
-        self.telemetry['apoapsis_altitude'] = orbit.apoapsis_altitude
-        self.telemetry['periapsis_altitude'] = orbit.periapsis_altitude
-        self.telemetry['eccentricity'] = orbit.eccentricity
-        self.telemetry['time_to_apoapsis'] = orbit.time_to_apoapsis
-        self.telemetry['time_to_periapsis'] = orbit.time_to_periapsis
-        self.telemetry['period'] = orbit.period
-        self.telemetry['inclination'] = orbit.inclination
-        self.telemetry['longitude_of_ascending_node'] = orbit.longitude_of_ascending_node
-        self.telemetry['argument_of_periapsis'] = orbit.argument_of_periapsis
-        self.telemetry['apoapsis'] = orbit.apoapsis
-        self.telemetry['periapsis'] = orbit.periapsis
-        self.telemetry['ref_body_name'] = orbit.body.name
-        self.telemetry['semi_major_axis'] = orbit.semi_major_axis
-        self.telemetry['semi_minor_axis'] = orbit.semi_minor_axis
-        self.telemetry['radius'] = orbit.radius
-        self.telemetry['orbital_speed'] = orbit.orbital_speed
-        self.telemetry['speed'] = orbit.speed
-        self.telemetry['true_anomaly'] = orbit.true_anomaly
-        
-        self.telemetry['time_to_ascending_node'] = orbit.ut_at_true_anomaly(-self.telemetry['argument_of_periapsis']) - self.telemetry['ut']
-        self.telemetry['time_to_descending_node'] = orbit.ut_at_true_anomaly(np.pi - self.telemetry['argument_of_periapsis']) - self.telemetry['ut']
+        self.telemetry.ut = self.space_center.ut
+        self.telemetry.apoapsis_altitude = orbit.apoapsis_altitude
+        self.telemetry.periapsis_altitude = orbit.periapsis_altitude
+        self.telemetry.eccentricity = orbit.eccentricity
+        self.telemetry.time_to_apoapsis = orbit.time_to_apoapsis
+        self.telemetry.time_to_periapsis = orbit.time_to_periapsis
+        self.telemetry.period = orbit.period
+        self.telemetry.inclination = orbit.inclination
+        self.telemetry.longitude_of_ascending_node = orbit.longitude_of_ascending_node
+        self.telemetry.argument_of_periapsis = orbit.argument_of_periapsis
+        self.telemetry.apoapsis = orbit.apoapsis
+        self.telemetry.periapsis = orbit.periapsis
+        self.telemetry.ref_body_name = orbit.body.name
+        self.telemetry.semi_major_axis = orbit.semi_major_axis
+        self.telemetry.semi_minor_axis = orbit.semi_minor_axis
+        self.telemetry.radius = orbit.radius
+        self.telemetry.orbital_speed = orbit.orbital_speed
+        self.telemetry.speed = orbit.speed
+        self.telemetry.true_anomaly = orbit.true_anomaly
 
-        self.telemetry['argument_of_periapsis_deg'] = np.rad2deg(orbit.argument_of_periapsis)
-        self.telemetry['longitude_of_ascending_node_deg'] = np.rad2deg(orbit.longitude_of_ascending_node)
-        self.telemetry['inclination_deg'] = np.rad2deg(orbit.inclination)
-        self.telemetry['true_anomaly_deg'] = np.rad2deg(orbit.true_anomaly)
+        self.telemetry.time_to_ascending_node = orbit.ut_at_true_anomaly(-self.telemetry.argument_of_periapsis) - self.telemetry.ut
+        self.telemetry.time_to_descending_node = orbit.ut_at_true_anomaly(np.pi - self.telemetry.argument_of_periapsis) - self.telemetry.ut
 
         self.telemetry_updated.emit(self.telemetry)
- 
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
