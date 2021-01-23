@@ -50,6 +50,11 @@ class HyperboleData(Telemetry):
 
 
     @property
+    def _p(self):
+        return self._l
+
+
+    @property
     @telemetry_cache('eccentricity', '_l')
     def _limit_soi(self):
         return np.arccos((self._l / (PLANET_DATA[self.ref_body_name.lower()]['soi']*1000*3) - 1) / self.eccentricity)
