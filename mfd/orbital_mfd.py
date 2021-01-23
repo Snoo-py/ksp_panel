@@ -2,10 +2,11 @@ from .ksp_mfd import KspMFD
 from math import sqrt
 import numpy as np
 from matplotlib.patches import Ellipse, Circle
-from matplotlib.lines import Line2D
 
 from planet_data import PLANET_DATA
 from orbital_data import EllipseData, HyperboleData
+from mfd.orbital_point import PeriapsisPlot, ApoapsisPlot, AscendingPlot, DescendingPlot, AscendingDescendingLine, VesselPlot
+
 
 
 class OrbitalMFD(KspMFD):
@@ -152,60 +153,41 @@ class OrbitalMFD(KspMFD):
 
     def draw_periapsis(self, telemetry):
         if not self.periapsis_plot:
-            # Plot periapsis position like a empty circle
-            self.periapsis_plot = Line2D([telemetry.periapsis_x], [telemetry.periapsis_y],
-                                            marker='o', markerfacecolor='black', markersize='6', color='green')
+            self.periapsis_plot = PeriapsisPlot(telemetry.periapsis_x, telemetry.periapsis_y)
             self.axes.add_line(self.periapsis_plot)
         else:
-            self.periapsis_plot.set_xdata([telemetry.periapsis_x])
-            self.periapsis_plot.set_ydata([telemetry.periapsis_y])
+            self.periapsis_plot.update_plot(telemetry.periapsis_x, telemetry.periapsis_y)
 
 
     def draw_apoapsis(self, telemetry):
         if not self.apoapsis_plot:
-            # Plot apoapsis position like a filled circle
-            self.apoapsis_plot = Line2D([telemetry.apoapsis_x], [telemetry.apoapsis_y],
-                                        marker='o', markersize='6', color='green')
+            self.apoapsis_plot = ApoapsisPlot(telemetry.apoapsis_x, telemetry.apoapsis_y)
             self.axes.add_line(self.apoapsis_plot)
         else:
-            self.apoapsis_plot.set_xdata([telemetry.apoapsis_x])
-            self.apoapsis_plot.set_ydata([telemetry.apoapsis_y])
+            self.apoapsis_plot.update_plot(telemetry.apoapsis_x, telemetry.apoapsis_y)
 
 
     def draw_ascending_descending_node(self, telemetry):
         if not self.ascending_plot:
-            # Plot ascending node position like a filled square
-            self.ascending_plot = Line2D([telemetry.ascending_node_x], [telemetry.ascending_node_y],
-                                          marker='s', markersize='6', color='green')
+            self.ascending_plot = AscendingPlot(telemetry.ascending_node_x ,telemetry.ascending_node_y)
             self.axes.add_line(self.ascending_plot)
 
-            # Plot descending node position like a empy square
-            self.descending_plot = Line2D([telemetry.descending_node_x], [telemetry.descending_node_y],
-                                          marker='s', markerfacecolor='black', markersize='6', color='green')
+            self.descending_plot = DescendingPlot(telemetry.descending_node_x, telemetry.descending_node_y)
             self.axes.add_line(self.descending_plot)
 
-            # Plot dashed line between ascending and descending node
-            self.ascending_descending = Line2D([telemetry.ascending_node_x, telemetry.descending_node_x],
-                                               [telemetry.ascending_node_y, telemetry.descending_node_y],
-                                               linestyle='--', marker='None', color='green')
+            self.ascending_descending = AscendingDescendingLine([telemetry.ascending_node_x, telemetry.descending_node_x],
+                                                                [telemetry.ascending_node_y, telemetry.descending_node_y])
             self.axes.add_line(self.ascending_descending)
         else:
-            self.ascending_plot.set_xdata([telemetry.ascending_node_x])
-            self.ascending_plot.set_ydata([telemetry.ascending_node_y])
-
-            self.descending_plot.set_xdata([telemetry.descending_node_x])
-            self.descending_plot.set_ydata([telemetry.descending_node_y])
-
-            self.ascending_descending.set_xdata([telemetry.ascending_node_x, telemetry.descending_node_x])
-            self.ascending_descending.set_ydata([telemetry.ascending_node_y, telemetry.descending_node_y])
+            self.ascending_plot.update_plot(telemetry.ascending_node_x, telemetry.ascending_node_y)
+            self.descending_plot.update_plot(telemetry.descending_node_x, telemetry.descending_node_y)
+            self.ascending_descending.update_plot([telemetry.ascending_node_x, telemetry.descending_node_x],
+                                                  [telemetry.ascending_node_y, telemetry.descending_node_y])
 
 
     def draw_vessel(self, telemetry):
         if not self.vessel_plot:
-            # Plot vessel position like a line between the center of mass of the ref body and the vessel position
-            self.vessel_plot = Line2D([0, telemetry.vessel_x], [0, telemetry.vessel_y],
-                                      marker='None', color='green')
+            self.vessel_plot = VesselPlot(telemetry.vessel_x, telemetry.vessel_y)
             self.axes.add_line(self.vessel_plot)
         else:
-            self.vessel_plot.set_xdata([0, telemetry.vessel_x])
-            self.vessel_plot.set_ydata([0, telemetry.vessel_y])
+            self.vessel_plot.update_plot(telemetry.vessel_x, telemetry.vessel_y)
