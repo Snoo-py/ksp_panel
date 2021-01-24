@@ -80,7 +80,10 @@ class OrbitalMFD(KspMFD):
         text.append('Vel %s' % self.get_value_to_string_KM(telemetry.orbital_speed))
         text.append('Inc %.4f°' % telemetry.inclination_deg)
         text.append('LAN %.4f°' % telemetry.longitude_of_ascending_node_deg)
-        text.append('LPe %.4f°' % telemetry.argument_of_periapsis_deg)
+        text.append('LPe %.4f°' % telemetry.longitude_of_periapsis_deg)
+        text.append('AgP %.4f°' % telemetry.argument_of_periapsis_deg)
+        text.append('Tra %.4f°' % telemetry.true_anomaly)
+        text.append('Mna %.4f°' % telemetry.mean_anomaly)
         leg_source = [self.ref_planet]*len(text)
 
         leg = self.axes.legend(leg_source, text, handlelength=0, handletextpad=0, fancybox=True,

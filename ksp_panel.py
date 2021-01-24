@@ -124,6 +124,7 @@ class KrpcClient(QObject):
         self.telemetry.orbital_speed = orbit.orbital_speed
         self.telemetry.speed = orbit.speed
         self.telemetry.true_anomaly = orbit.true_anomaly
+        self.telemetry.mean_anomaly = orbit.mean_anomaly
 
         self.telemetry.time_to_ascending_node = orbit.ut_at_true_anomaly(-self.telemetry.argument_of_periapsis) - self.telemetry.ut
         self.telemetry.time_to_descending_node = orbit.ut_at_true_anomaly(np.pi - self.telemetry.argument_of_periapsis) - self.telemetry.ut

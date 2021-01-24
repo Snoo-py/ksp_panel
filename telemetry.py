@@ -1,6 +1,7 @@
 import functools
 import numpy as np
 
+from planet_data import PLANET_DATA
 
 
 def telemetry_cache(*checks):
@@ -51,6 +52,11 @@ class Telemetry(object):
 
 
     @property
+    def radius_altitude(self):
+        return self.radius - PLANET_DATA[self.ref_body_name]['radius'] * 1000
+
+
+    @property
     def periapsis_x(self):
         return self.periapsis * self.cos_longitude_of_periapsis
 
@@ -70,6 +76,11 @@ class Telemetry(object):
         if self.eccentricity < 1:
             return -self.apoapsis * self.sin_longitude_of_periapsis
         return None
+
+
+    @property
+    def longitude_of_periapsis_deg(self):
+        return self.argument_of_periapsis_deg + self.longitude_of_ascending_node_deg
 
 
     @property
