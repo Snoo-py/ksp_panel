@@ -41,7 +41,16 @@ class Telemetry(object):
 
 
     def __getattr__(self, name):
-        return self._telemetry.get(name)
+        dsp_str = True if name.endswith('_str') else False
+        name = name if not name.endswith('_str')  else name.replace('_str', '')
+        value = None
+        if name in self._telemetry:
+            value = self._telemetry.get(name)
+        elif hasattr(self, name):
+            value = getattr(self, name)
+        if not dsp_str or not value:
+            return value
+        return self._get_value_to_string_KM(value)
 
 
     def __setattr__(self, name, value):
@@ -49,6 +58,37 @@ class Telemetry(object):
             object.__setattr__(self, name, value)
         else:
             self._telemetry[name] = value
+
+
+    def _get_value_to_string_KM(self, value):
+        """
+        10 -> 10
+        100 -> 100
+        1,000 -> 1.000K
+        10,000 -> 10.00K
+        100,000 -> 100.0K
+        1,000,000 -> 1.000M
+        10,000,000 -> 10.00M
+        100,000,000 -> 100.0M
+        """
+        i_value = float(value)
+        n = 1
+        unit = None
+        if i_value < 0:
+            n = -1
+            i_value = -i_value
+
+        if i_value < 1000.0:
+            v = '%s' % (n * i_value)
+        elif i_value < 1000000.0:
+            v = '%s' % (n * i_value / 1000.0)
+            unit = 'K'
+        else:
+            v = '%s' % (n * i_value / 1000000.0)
+            unit = 'M'
+        if unit:
+            return '%s%s' % (v[:5], unit)
+        return '%s' % v[:6]
 
 
     @property

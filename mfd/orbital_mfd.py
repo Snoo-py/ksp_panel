@@ -37,47 +37,17 @@ class OrbitalMFD(KspMFD):
         self.axes.relim()
 
 
-    def get_value_to_string_KM(self, value):
-        """
-        10 -> 10
-        100 -> 100
-        1,000 -> 1.000K
-        10,000 -> 10.00K
-        100,000 -> 100.0K
-        1,000,000 -> 1.000M
-        10,000,000 -> 10.00M
-        100,000,000 -> 100.0M
-        """
-        i_value = float(value)
-        n = 1
-        unit = None
-        if i_value < 0:
-            n = -1
-            i_value = -i_value
-
-        if i_value < 1000.0:
-            v = '%s' % (n * i_value)
-        elif i_value < 1000000.0:
-            v = '%s' % (n * i_value / 1000.0)
-            unit = 'K'
-        else:
-            v = '%s' % (n * i_value / 1000000.0)
-            unit = 'M'
-        if unit:
-            return '%s%s' % (v[:5], unit)
-        return '%s' % v[:6]
-
-
     def numeric_orbit_value(self, telemetry):
         text = []
         text.append('----SELF----')
-        text.append('Pe  %s' % self.get_value_to_string_KM(telemetry.periapsis_altitude))
-        text.append('Ap  %s' % self.get_value_to_string_KM(telemetry.apoapsis_altitude))
+        text.append('Pe  %s' % telemetry.periapsis_altitude_str)
+        text.append('Ap  %s' % telemetry.apoapsis_altitude_str)
+        text.append('Rad %s' % telemetry.radius_altitude_str)
         text.append('Ecc %.4f' % telemetry.eccentricity)
-        text.append('T   %s' % self.get_value_to_string_KM(telemetry.period))
-        text.append('PeT %s' % self.get_value_to_string_KM(telemetry.time_to_periapsis))
-        text.append('ApT %s' % self.get_value_to_string_KM(telemetry.time_to_apoapsis))
-        text.append('Vel %s' % self.get_value_to_string_KM(telemetry.orbital_speed))
+        text.append('T   %s' % telemetry.period_str)
+        text.append('PeT %s' % telemetry.time_to_periapsis_str)
+        text.append('ApT %s' % telemetry.time_to_apoapsis_str)
+        text.append('Vel %s' % telemetry.orbital_speed_str)
         text.append('Inc %.4f°' % telemetry.inclination_deg)
         text.append('LAN %.4f°' % telemetry.longitude_of_ascending_node_deg)
         text.append('LPe %.4f°' % telemetry.longitude_of_periapsis_deg)
