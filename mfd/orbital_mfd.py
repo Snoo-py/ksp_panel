@@ -1,4 +1,4 @@
-from .ksp_mfd import KspMFD
+from mfd.ksp_mfd import KspMFDFigure
 from math import sqrt
 import numpy as np
 from matplotlib.patches import Ellipse, Circle
@@ -9,10 +9,10 @@ from mfd.orbital_point import PeriapsisPlot, ApoapsisPlot, AscendingPlot, Descen
 
 
 
-class OrbitalMFD(KspMFD):
+class OrbitalMFD(KspMFDFigure):
 
     def __init__(self, parent=None, width=5, height=5, dpi=100):
-        KspMFD.__init__(self, parent, width, height, dpi)
+        KspMFDFigure.__init__(self, parent, width, height, dpi)
         self.show_legend = True
         self.current_active_vessel_id = None
         self.ref_planet = None

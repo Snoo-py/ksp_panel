@@ -3,7 +3,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 
-class KspMFD(FigureCanvas):
+class KspMFDFigure(FigureCanvas):
     def __init__(self, parent=None, width=5, height=5, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi, facecolor='black')
 
