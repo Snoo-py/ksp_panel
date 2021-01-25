@@ -1,7 +1,7 @@
 import functools
 import numpy as np
 
-from planet_data import PLANET_DATA
+from panel.planet_data import PLANET_DATA
 
 
 def telemetry_cache(*checks):

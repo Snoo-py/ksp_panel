@@ -1,11 +1,12 @@
-from mfd.ksp_mfd import KspMFDFigure
 from math import sqrt
 import numpy as np
 from matplotlib.patches import Ellipse, Circle
 
-from planet_data import PLANET_DATA
-from orbital_data import EllipseData, HyperboleData
-from mfd.orbital_point import PeriapsisPlot, ApoapsisPlot, AscendingPlot, DescendingPlot, AscendingDescendingLine, VesselPlot
+from panel.mfd.ksp_mfd_figure import KspMFDFigure
+from panel.planet_data import PLANET_DATA
+from panel.telemetry.ellipse import EllipseData
+from panel.telemetry.hyperbole import HyperboleData
+from panel.orbital.orbital_point import PeriapsisPlot, ApoapsisPlot, AscendingPlot, DescendingPlot, AscendingDescendingLine, VesselPlot
 
 
 
