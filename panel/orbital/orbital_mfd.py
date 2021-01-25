@@ -1,9 +1,5 @@
-from math import sqrt
-import numpy as np
-from matplotlib.patches import Ellipse, Circle
-
 from panel.mfd.ksp_mfd_figure import KspMFDFigure
-from panel.planet_data import PLANET_DATA
+from panel.orbital.ref_planet_plot import RefPlanetPlot
 from panel.orbital.hyperbole_orbit import HyperboleOrbit
 from panel.orbital.ellipse_orbit import EllipseOrbit
 
@@ -33,8 +29,7 @@ class OrbitalMFD(KspMFDFigure):
         self.show_legend = True
         self.show_orbit = True
         self.current_active_vessel_id = None
-        self.ref_planet = None
-        self.ref_body_name = None
+        self.ref_planet_plot = RefPlanetPlot(self.axes)
         self.ellipse_orbit_plot = EllipseOrbit(self.axes)
         self.hyperbole_orbit_plot = HyperboleOrbit(self.axes)
         self.ship_text = None
@@ -42,7 +37,7 @@ class OrbitalMFD(KspMFDFigure):
 
     def _update_mfd_data(self, telemetry):
         if self.show_orbit:
-            self.draw_ref_planet(telemetry)
+            self.ref_planet_plot.update_ref_planet(telemetry)
             self.draw_vessel_orbit(telemetry)
         else:
             self.remove_orbit_display()
@@ -81,21 +76,6 @@ class OrbitalMFD(KspMFDFigure):
             self.ship_text.set_text(text)
 
 
-    def draw_ref_planet(self, telemetry):
-        # Reference planet
-        if self.ref_body_name == telemetry.ref_body_name:
-            return
-        self.ref_body_name = telemetry.ref_body_name
-        diameter = PLANET_DATA[self.ref_body_name]['radius'] *1000 * 2
-        if not self.ref_planet:
-            self.ref_planet = Ellipse((0, 0), width=diameter, height=diameter, fill=False, color='grey')
-            self.axes.add_patch(self.ref_planet)
-        else:
-            self.ref_planet.width = diameter
-            self.ref_planet.height = diameter
-        limit = PLANET_DATA[self.ref_body_name]['soi']*1000
-
-
     def draw_vessel_orbit(self, telemetry):
         if telemetry.eccentricity < 1:
             self.draw_ellipse_orbit(telemetry)
@@ -126,17 +106,10 @@ class OrbitalMFD(KspMFDFigure):
 
 
     def remove_orbit_display(self):
-        self.remove_reference_planet()
+        self.ref_planet_plot.remove()
         self.ellipse_orbit_plot.remove()
         self.hyperbole_orbit_plot.remove()
         self.remove_parabole_orbit()
-
-
-    def remove_reference_planet(self):
-        if self.ref_planet:
-            self.ref_planet.remove()
-            self.ref_planet = None
-            self.ref_body_name = None
 
 
     def remove_parabole_orbit(self):
