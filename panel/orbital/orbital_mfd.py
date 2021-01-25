@@ -149,44 +149,42 @@ class OrbitalMFD(KspMFDFigure):
 
     def draw_periapsis(self, telemetry):
         if not self.periapsis_plot:
-            self.periapsis_plot = PeriapsisPlot(telemetry.periapsis_x, telemetry.periapsis_y)
+            self.periapsis_plot = PeriapsisPlot(telemetry)
             self.axes.add_line(self.periapsis_plot)
         else:
-            self.periapsis_plot.update_plot(telemetry.periapsis_x, telemetry.periapsis_y)
+            self.periapsis_plot.update_plot(telemetry)
 
 
     def draw_apoapsis(self, telemetry):
         if not self.apoapsis_plot:
-            self.apoapsis_plot = ApoapsisPlot(telemetry.apoapsis_x, telemetry.apoapsis_y)
+            self.apoapsis_plot = ApoapsisPlot(telemetry)
             self.axes.add_line(self.apoapsis_plot)
         else:
-            self.apoapsis_plot.update_plot(telemetry.apoapsis_x, telemetry.apoapsis_y)
+            self.apoapsis_plot.update_plot(telemetry)
 
 
     def draw_ascending_descending_node(self, telemetry):
         if not self.ascending_plot:
-            self.ascending_plot = AscendingPlot(telemetry.ascending_node_x ,telemetry.ascending_node_y)
+            self.ascending_plot = AscendingPlot(telemetry)
             self.axes.add_line(self.ascending_plot)
 
-            self.descending_plot = DescendingPlot(telemetry.descending_node_x, telemetry.descending_node_y)
+            self.descending_plot = DescendingPlot(telemetry)
             self.axes.add_line(self.descending_plot)
 
-            self.ascending_descending = AscendingDescendingLine([telemetry.ascending_node_x, telemetry.descending_node_x],
-                                                                [telemetry.ascending_node_y, telemetry.descending_node_y])
+            self.ascending_descending = AscendingDescendingLine(telemetry)
             self.axes.add_line(self.ascending_descending)
         else:
-            self.ascending_plot.update_plot(telemetry.ascending_node_x, telemetry.ascending_node_y)
-            self.descending_plot.update_plot(telemetry.descending_node_x, telemetry.descending_node_y)
-            self.ascending_descending.update_plot([telemetry.ascending_node_x, telemetry.descending_node_x],
-                                                  [telemetry.ascending_node_y, telemetry.descending_node_y])
+            self.ascending_plot.update_plot(telemetry)
+            self.descending_plot.update_plot(telemetry)
+            self.ascending_descending.update_plot(telemetry)
 
 
     def draw_vessel(self, telemetry):
         if not self.vessel_plot:
-            self.vessel_plot = VesselPlot(telemetry.vessel_x, telemetry.vessel_y)
+            self.vessel_plot = VesselPlot(telemetry)
             self.axes.add_line(self.vessel_plot)
         else:
-            self.vessel_plot.update_plot(telemetry.vessel_x, telemetry.vessel_y)
+            self.vessel_plot.update_plot(telemetry)
 
 
     def remove_text(self):
