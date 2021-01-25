@@ -13,6 +13,7 @@ class OrbitalMFD(KspMFD):
 
     def __init__(self, parent=None, width=5, height=5, dpi=100):
         KspMFD.__init__(self, parent, width, height, dpi)
+        self.show_legend = True
         self.current_active_vessel_id = None
         self.ref_planet = None
         self.ref_body_name = None
@@ -54,14 +55,13 @@ class OrbitalMFD(KspMFD):
         text.append('AgP %.4f°' % telemetry.argument_of_periapsis_deg)
         text.append('Tra %.4f°' % telemetry.true_anomaly)
         text.append('Mna %.4f°' % telemetry.mean_anomaly)
-        leg_source = [self.ref_planet]*len(text)
-
-        leg = self.axes.legend(leg_source, text, handlelength=0, handletextpad=0, fancybox=True,
-                               framealpha=0, loc='upper left', prop={'family':'monospace'})
-        for item in leg.legendHandles:
-            item.set_visible(False)
-        for item in leg.get_texts():
-            item.set_color('green')
+        text = '\n'.join(text)
+        if not self.ship_text:
+            self.ship_text = self.axes.text(0.05, 0.95, text, horizontalalignment='left',
+                                            verticalalignment='top', color='green',
+                                            transform=self.axes.transAxes, fontsize=14)
+        else:
+            self.ship_text.set_text(text)
 
 
     def draw_ref_planet(self, telemetry):
