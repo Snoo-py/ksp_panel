@@ -6,7 +6,6 @@ from panel.mfd.ksp_mfd_figure import KspMFDFigure
 from panel.planet_data import PLANET_DATA
 from panel.orbital.hyperbole_orbit import HyperboleOrbit
 from panel.orbital.ellipse_orbit import EllipseOrbit
-from panel.orbital.orbital_point import PeriapsisPlot, ApoapsisPlot, AscendingPlot, DescendingPlot, AscendingDescendingLine, VesselPlot
 
 
 
@@ -38,12 +37,6 @@ class OrbitalMFD(KspMFDFigure):
         self.ref_body_name = None
         self.ellipse_orbit_plot = EllipseOrbit(self.axes)
         self.hyperbole_orbit_plot = HyperboleOrbit(self.axes)
-        self.periapsis_plot = PeriapsisPlot(self.axes)
-        self.apoapsis_plot = ApoapsisPlot(self.axes)
-        self.ascending_plot = AscendingPlot(self.axes)
-        self.descending_plot = DescendingPlot(self.axes)
-        self.ascending_descending = AscendingDescendingLine(self.axes)
-        self.vessel_plot = VesselPlot(self.axes)
         self.ship_text = None
 
 
@@ -115,12 +108,6 @@ class OrbitalMFD(KspMFDFigure):
     def draw_ellipse_orbit(self, ellipse):
         self.hyperbole_orbit_plot.remove()
         self.ellipse_orbit_plot.update_orbit(ellipse)
-        self.periapsis_plot.update_plot(ellipse)
-        self.apoapsis_plot.update_plot(ellipse)
-        self.ascending_plot.update_plot(ellipse)
-        self.descending_plot.update_plot(ellipse)
-        self.ascending_descending.update_plot(ellipse)
-        self.vessel_plot.update_plot(ellipse)
 
 
     def draw_parabole_orbit(self, telemetry):
@@ -130,11 +117,6 @@ class OrbitalMFD(KspMFDFigure):
     def draw_hyperbole_orbit(self, telemetry):
         self.ellipse_orbit_plot.remove()
         self.hyperbole_orbit_plot.update_orbit(telemetry)
-        self.periapsis_plot.update_plot(telemetry)
-        self.ascending_plot.update_plot(telemetry)
-        self.descending_plot.update_plot(telemetry)
-        self.ascending_descending.update_plot(telemetry)
-        self.vessel_plot.update_plot(telemetry)
 
 
     def remove_text(self):
@@ -148,12 +130,6 @@ class OrbitalMFD(KspMFDFigure):
         self.ellipse_orbit_plot.remove()
         self.hyperbole_orbit_plot.remove()
         self.remove_parabole_orbit()
-        self.periapsis_plot.remove()
-        self.apoapsis_plot.remove()
-        self.ascending_plot.remove()
-        self.descending_plot.remove()
-        self.ascending_descending.remove()
-        self.vessel_plot.remove()
 
 
     def remove_reference_planet(self):
