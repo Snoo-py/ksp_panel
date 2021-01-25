@@ -67,7 +67,7 @@ class KrpcClient(QObject):
          # initialize update timers
         self._short_term_scheduler = QTimer()
         self._short_term_scheduler.timeout.connect(self.short_term_processing)
-        self._short_term_scheduler.start(0.10 * 1000)
+        self._short_term_scheduler.start(int(0.25 * 100))
 
 
     @pyqtSlot()
