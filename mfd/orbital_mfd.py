@@ -28,8 +28,6 @@ class OrbitalMFD(KspMFDFigure):
 
 
     def _update_mfd_data(self, telemetry):
-        if self.ref_body_name != telemetry.ref_body_name.lower():
-            self.ref_body_name = telemetry.ref_body_name.lower()
             self.draw_ref_planet(telemetry)
         self.draw_vessel_orbit(telemetry)
         self.numeric_orbit_value(telemetry)
@@ -66,6 +64,9 @@ class OrbitalMFD(KspMFDFigure):
 
     def draw_ref_planet(self, telemetry):
         # Reference planet
+        if self.ref_body_name == telemetry.ref_body_name:
+            return
+        self.ref_body_name = telemetry.ref_body_name
         diameter = PLANET_DATA[self.ref_body_name]['radius'] *1000 * 2
         if not self.ref_planet:
             self.ref_planet = Ellipse((0, 0), width=diameter, height=diameter, fill=False, color='grey')

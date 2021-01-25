@@ -34,13 +34,13 @@ class HyperboleData(Telemetry):
     @property
     def _c3(self):
         # https://en.wikipedia.org/wiki/Hyperbolic_trajectory
-        return self.speed**2 - 2 * PLANET_DATA[self.ref_body_name.lower()]['mu'] * 10**9 / self.radius
+        return self.speed**2 - 2 * PLANET_DATA[self.ref_body_name]['mu'] * 10**9 / self.radius
 
 
     @property
     def _a(self):
         # https://en.wikipedia.org/wiki/Characteristic_energy
-        return -PLANET_DATA[self.ref_body_name.lower()]['mu'] * 10**9 / self._c3
+        return -PLANET_DATA[self.ref_body_name]['mu'] * 10**9 / self._c3
 
 
     @property
@@ -57,7 +57,7 @@ class HyperboleData(Telemetry):
     @property
     @telemetry_cache('eccentricity', '_l')
     def _limit_soi(self):
-        return np.arccos((self._l / (PLANET_DATA[self.ref_body_name.lower()]['soi']*1000*3) - 1) / self.eccentricity)
+        return np.arccos((self._l / (PLANET_DATA[self.ref_body_name]['soi']*1000*3) - 1) / self.eccentricity)
 
 
     @property

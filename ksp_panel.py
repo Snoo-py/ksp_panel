@@ -117,7 +117,7 @@ class KrpcClient(QObject):
         self.telemetry.argument_of_periapsis = orbit.argument_of_periapsis
         self.telemetry.apoapsis = orbit.apoapsis
         self.telemetry.periapsis = orbit.periapsis
-        self.telemetry.ref_body_name = orbit.body.name
+        self.telemetry.ref_body_name = orbit.body.name.lower()
         self.telemetry.semi_major_axis = orbit.semi_major_axis
         self.telemetry.semi_minor_axis = orbit.semi_minor_axis
         self.telemetry.radius = orbit.radius
