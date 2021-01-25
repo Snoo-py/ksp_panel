@@ -4,8 +4,8 @@ from matplotlib.patches import Ellipse, Circle
 
 from panel.mfd.ksp_mfd_figure import KspMFDFigure
 from panel.planet_data import PLANET_DATA
-from panel.telemetry.ellipse import EllipseData
-from panel.telemetry.hyperbole import HyperboleData
+from panel.orbital.hyperbole_orbit import HyperboleOrbit
+from panel.orbital.ellipse_orbit import EllipseOrbit
 from panel.orbital.orbital_point import PeriapsisPlot, ApoapsisPlot, AscendingPlot, DescendingPlot, AscendingDescendingLine, VesselPlot
 
 
@@ -36,8 +36,8 @@ class OrbitalMFD(KspMFDFigure):
         self.current_active_vessel_id = None
         self.ref_planet = None
         self.ref_body_name = None
-        self.ellipse_orbit_plot = None
-        self.hyperbole_orbit_plot = None
+        self.ellipse_orbit_plot = EllipseOrbit(self.axes)
+        self.hyperbole_orbit_plot = HyperboleOrbit(self.axes)
         self.periapsis_plot = None
         self.apoapsis_plot = None
         self.ascending_plot = None
@@ -105,28 +105,16 @@ class OrbitalMFD(KspMFDFigure):
 
     def draw_vessel_orbit(self, telemetry):
         if telemetry.eccentricity < 1:
-            telemetry.__class__ = EllipseData
             self.draw_ellipse_orbit(telemetry)
         elif telemetry.eccentricity == 1:
             self.draw_parabole_orbit(telemetry)
         else:
-            telemetry.__class__ = HyperboleData
             self.draw_hyperbole_orbit(telemetry)
 
 
     def draw_ellipse_orbit(self, ellipse):
-        self.remove_hyperbole_orbit()
-        angle = ellipse.argument_of_periapsis_deg + ellipse.longitude_of_ascending_node_deg
-        if not self.ellipse_orbit_plot:
-            self.ellipse_orbit_plot = Ellipse((-ellipse.focus_x, -ellipse.focus_y),
-                                              width=ellipse.width, height=ellipse.height,
-                                              angle=angle, fill=False, color='green')
-            self.axes.add_patch(self.ellipse_orbit_plot)
-        else:
-            self.ellipse_orbit_plot.center = (-ellipse.focus_x, -ellipse.focus_y)
-            self.ellipse_orbit_plot.width = ellipse.width
-            self.ellipse_orbit_plot.height = ellipse.height
-            self.ellipse_orbit_plot.angle = angle
+        self.hyperbole_orbit_plot.remove()
+        self.ellipse_orbit_plot.update_orbit(ellipse)
         self.draw_periapsis(ellipse)
         self.draw_apoapsis(ellipse)
         self.draw_ascending_descending_node(ellipse)
@@ -138,10 +126,8 @@ class OrbitalMFD(KspMFDFigure):
 
 
     def draw_hyperbole_orbit(self, telemetry):
-        self.remove_ellipse_orbit()
-        self.remove_hyperbole_orbit()
-        self.hyperbole_orbit_plot = self.axes.plot(telemetry.hyperbole_x, telemetry.hyperbole_y,
-                                                   color='green', linewidth=0.8)
+        self.ellipse_orbit_plot.remove()
+        self.hyperbole_orbit_plot.update_orbit(telemetry)
         self.draw_periapsis(telemetry)
         self.draw_ascending_descending_node(telemetry)
         self.draw_vessel(telemetry)
@@ -195,8 +181,8 @@ class OrbitalMFD(KspMFDFigure):
 
     def remove_orbit_display(self):
         self.remove_reference_planet()
-        self.remove_ellipse_orbit()
-        self.remove_hyperbole_orbit()
+        self.ellipse_orbit_plot.remove()
+        self.hyperbole_orbit_plot.remove()
         self.remove_parabole_orbit()
         self.remove_apoapsis()
         self.remove_periapsis()
@@ -209,18 +195,6 @@ class OrbitalMFD(KspMFDFigure):
             self.ref_planet.remove()
             self.ref_planet = None
             self.ref_body_name = None
-
-
-    def remove_ellipse_orbit(self):
-        if self.ellipse_orbit_plot:
-            self.ellipse_orbit_plot.remove()
-            self.ellipse_orbit_plot = None
-
-
-    def remove_hyperbole_orbit(self):
-        if self.hyperbole_orbit_plot:
-            self.hyperbole_orbit_plot.pop(0).remove()
-            self.hyperbole_orbit_plot = None
 
 
     def remove_parabole_orbit(self):
