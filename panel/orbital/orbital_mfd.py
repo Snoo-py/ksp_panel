@@ -38,12 +38,12 @@ class OrbitalMFD(KspMFDFigure):
         self.ref_body_name = None
         self.ellipse_orbit_plot = EllipseOrbit(self.axes)
         self.hyperbole_orbit_plot = HyperboleOrbit(self.axes)
-        self.periapsis_plot = None
-        self.apoapsis_plot = None
-        self.ascending_plot = None
-        self.descending_plot = None
-        self.ascending_descending = None
-        self.vessel_plot = None
+        self.periapsis_plot = PeriapsisPlot(self.axes)
+        self.apoapsis_plot = ApoapsisPlot(self.axes)
+        self.ascending_plot = AscendingPlot(self.axes)
+        self.descending_plot = DescendingPlot(self.axes)
+        self.ascending_descending = AscendingDescendingLine(self.axes)
+        self.vessel_plot = VesselPlot(self.axes)
         self.ship_text = None
 
 
@@ -115,10 +115,12 @@ class OrbitalMFD(KspMFDFigure):
     def draw_ellipse_orbit(self, ellipse):
         self.hyperbole_orbit_plot.remove()
         self.ellipse_orbit_plot.update_orbit(ellipse)
-        self.draw_periapsis(ellipse)
-        self.draw_apoapsis(ellipse)
-        self.draw_ascending_descending_node(ellipse)
-        self.draw_vessel(ellipse)
+        self.periapsis_plot.update_plot(ellipse)
+        self.apoapsis_plot.update_plot(ellipse)
+        self.ascending_plot.update_plot(ellipse)
+        self.descending_plot.update_plot(ellipse)
+        self.ascending_descending.update_plot(ellipse)
+        self.vessel_plot.update_plot(ellipse)
 
 
     def draw_parabole_orbit(self, telemetry):
@@ -128,49 +130,11 @@ class OrbitalMFD(KspMFDFigure):
     def draw_hyperbole_orbit(self, telemetry):
         self.ellipse_orbit_plot.remove()
         self.hyperbole_orbit_plot.update_orbit(telemetry)
-        self.draw_periapsis(telemetry)
-        self.draw_ascending_descending_node(telemetry)
-        self.draw_vessel(telemetry)
-
-
-    def draw_periapsis(self, telemetry):
-        if not self.periapsis_plot:
-            self.periapsis_plot = PeriapsisPlot(telemetry)
-            self.axes.add_line(self.periapsis_plot)
-        else:
-            self.periapsis_plot.update_plot(telemetry)
-
-
-    def draw_apoapsis(self, telemetry):
-        if not self.apoapsis_plot:
-            self.apoapsis_plot = ApoapsisPlot(telemetry)
-            self.axes.add_line(self.apoapsis_plot)
-        else:
-            self.apoapsis_plot.update_plot(telemetry)
-
-
-    def draw_ascending_descending_node(self, telemetry):
-        if not self.ascending_plot:
-            self.ascending_plot = AscendingPlot(telemetry)
-            self.axes.add_line(self.ascending_plot)
-
-            self.descending_plot = DescendingPlot(telemetry)
-            self.axes.add_line(self.descending_plot)
-
-            self.ascending_descending = AscendingDescendingLine(telemetry)
-            self.axes.add_line(self.ascending_descending)
-        else:
-            self.ascending_plot.update_plot(telemetry)
-            self.descending_plot.update_plot(telemetry)
-            self.ascending_descending.update_plot(telemetry)
-
-
-    def draw_vessel(self, telemetry):
-        if not self.vessel_plot:
-            self.vessel_plot = VesselPlot(telemetry)
-            self.axes.add_line(self.vessel_plot)
-        else:
-            self.vessel_plot.update_plot(telemetry)
+        self.periapsis_plot.update_plot(telemetry)
+        self.ascending_plot.update_plot(telemetry)
+        self.descending_plot.update_plot(telemetry)
+        self.ascending_descending.update_plot(telemetry)
+        self.vessel_plot.update_plot(telemetry)
 
 
     def remove_text(self):
@@ -184,10 +148,12 @@ class OrbitalMFD(KspMFDFigure):
         self.ellipse_orbit_plot.remove()
         self.hyperbole_orbit_plot.remove()
         self.remove_parabole_orbit()
-        self.remove_apoapsis()
-        self.remove_periapsis()
-        self.remove_ascending_descending()
-        self.remove_vessel()
+        self.periapsis_plot.remove()
+        self.apoapsis_plot.remove()
+        self.ascending_plot.remove()
+        self.descending_plot.remove()
+        self.ascending_descending.remove()
+        self.vessel_plot.remove()
 
 
     def remove_reference_planet(self):
@@ -199,36 +165,6 @@ class OrbitalMFD(KspMFDFigure):
 
     def remove_parabole_orbit(self):
         pass
-
-
-    def remove_periapsis(self):
-        if self.periapsis_plot:
-            self.periapsis_plot.remove()
-            self.periapsis_plot = None
-
-
-    def remove_apoapsis(self):
-        if self.apoapsis_plot:
-            self.apoapsis_plot.remove()
-            self.apoapsis_plot = None
-
-
-    def remove_ascending_descending(self):
-        if self.ascending_plot:
-            self.ascending_plot.remove()
-            self.ascending_plot = None
-        if self.descending_plot:
-            self.descending_plot.remove()
-            self.descending_plot = None
-        if self.ascending_descending:
-            self.ascending_descending.remove()
-            self.ascending_descending = None
-
-
-    def remove_vessel(self):
-        if self.vessel_plot:
-            self.vessel_plot.remove()
-            self.vessel_plot = None
 
 
     def handler_toggle_distance_unit(self):
