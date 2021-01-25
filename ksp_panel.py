@@ -134,7 +134,7 @@ class KrpcClient(QObject):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-H', '--host', help='ksp server')
+    parser.add_argument('-H', '--host', help='ksp server', required=True)
     args = parser.parse_args()
 
     app = QApplication(sys.argv)
