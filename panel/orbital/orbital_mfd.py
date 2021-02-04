@@ -3,7 +3,7 @@ from panel.orbital.ref_planet_plot import RefPlanetPlot
 from panel.orbital.hyperbole_orbit import HyperboleOrbit
 from panel.orbital.ellipse_orbit import EllipseOrbit
 from panel.telemetry.telemetry import PROJECTION
-from panel.orbital.orbital_text import ProjectionText
+from panel.orbital.orbital_text import ProjectionText, ShipOrbitalText
 
 
 
@@ -35,7 +35,8 @@ class OrbitalMFD(KspMFDFigure):
         self.ref_planet_plot = RefPlanetPlot(self.axes)
         self.ellipse_orbit_plot = EllipseOrbit(self.axes)
         self.hyperbole_orbit_plot = HyperboleOrbit(self.axes)
-        self.ship_text = None
+        self.ship_text = ShipOrbitalText(self.axes, 0.05, 0.95, color='green', verticalalignment='top',
+                                         transform=self.axes.transAxes, fontsize=14)
         self.projection_text = ProjectionText(self.axes, 0.85, 0.95, color='grey',
                                               transform=self.axes.transAxes, fontsize=14)
 
@@ -48,39 +49,13 @@ class OrbitalMFD(KspMFDFigure):
         else:
             self.remove_orbit_display()
         if self.show_legend:
-            self.numeric_orbit_value(telemetry)
+            self.ship_text.update_text(telemetry)
             self.projection_text.update_text(self.projection_mode)
         else:
             self.remove_text()
         self.axes.axis('auto')
         self.axes.set_aspect('equal', adjustable='datalim')
         self.axes.relim()
-
-
-    def numeric_orbit_value(self, telemetry):
-        text = []
-        text.append('----SELF----')
-        text.append('Pe  %s' % telemetry.periapsis_altitude_str)
-        text.append('Ap  %s' % telemetry.apoapsis_altitude_str)
-        text.append('Rad %s' % telemetry.radius_altitude_str)
-        text.append('Ecc %.4f' % telemetry.eccentricity)
-        text.append('T   %s' % telemetry.period_str)
-        text.append('PeT %s' % telemetry.time_to_periapsis_str)
-        text.append('ApT %s' % telemetry.time_to_apoapsis_str)
-        text.append('Vel %s' % telemetry.orbital_speed_str)
-        text.append('Inc %.4f°' % telemetry.inclination_deg)
-        text.append('LAN %.4f°' % telemetry.longitude_of_ascending_node_deg)
-        text.append('LPe %.4f°' % telemetry.longitude_of_periapsis_deg)
-        text.append('AgP %.4f°' % telemetry.argument_of_periapsis_deg)
-        text.append('Tra %.4f°' % telemetry.true_anomaly)
-        text.append('Mna %.4f°' % telemetry.mean_anomaly)
-        text = '\n'.join(text)
-        if not self.ship_text:
-            self.ship_text = self.axes.text(0.05, 0.95, text, horizontalalignment='left',
-                                            verticalalignment='top', color='green',
-                                            transform=self.axes.transAxes, fontsize=14)
-        else:
-            self.ship_text.set_text(text)
 
 
     def draw_vessel_orbit(self, telemetry):
@@ -107,9 +82,8 @@ class OrbitalMFD(KspMFDFigure):
 
 
     def remove_text(self):
-        if self.ship_text:
-            self.ship_text.remove()
-            self.ship_text = None
+        self.ship_text.remove()
+        self.projection_text.remove()
 
 
     def remove_orbit_display(self):
