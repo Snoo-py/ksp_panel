@@ -10,7 +10,8 @@ class OrbitPointPlot(object):
 
 
     def _create_plot(self, telemetry):
-        self._plot = Line2D(self._get_x(telemetry), self._get_y(telemetry), *self._args, **self._kwargs)
+        x, y = telemetry.projection(self._get_x(telemetry), self._get_y(telemetry))
+        self._plot = Line2D(x, y, *self._args, **self._kwargs)
         self._axes.add_line(self._plot)
 
 
@@ -18,8 +19,9 @@ class OrbitPointPlot(object):
         if not self._plot:
             self._create_plot(telemetry)
         else:
-            self._plot.set_xdata(self._get_x(telemetry))
-            self._plot.set_ydata(self._get_y(telemetry))
+            x, y = telemetry.projection(self._get_x(telemetry), self._get_y(telemetry))
+            self._plot.set_xdata(x)
+            self._plot.set_ydata(y)
 
 
     def _get_x(self, telemetry):

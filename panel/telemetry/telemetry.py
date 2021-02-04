@@ -1,7 +1,29 @@
 import functools
 import numpy as np
+from enum import Enum
 
 from panel.planet_data import PLANET_DATA
+
+
+
+class PROJECTION(bytes, Enum):
+    SHIP = (0, 'SHP')
+    EQUATORIAL = (1, 'EQU')
+
+    def __new__(cls, value, label):
+        obj = bytes.__new__(cls, [value])
+        obj._value_ = value
+        obj.label = label
+        return obj
+
+    def next(self):
+        cls = self.__class__
+        members = list(cls)
+        index = members.index(self) + 1
+        if index >= len(members):
+            index = 0
+        return members[index]
+
 
 
 def telemetry_cache(*checks):
@@ -38,6 +60,7 @@ def telemetry_cache(*checks):
 class Telemetry(object):
     def __init__(self):
          self.__dict__['_telemetry'] = {}
+         self.projection_mode = PROJECTION.SHIP
 
 
     def __getattr__(self, name):
@@ -91,6 +114,29 @@ class Telemetry(object):
         return '%s' % v[:6]
 
 
+    def projection(self, x, y):
+        if self.projection_mode == PROJECTION.SHIP:
+            return self.ship_projection(x, y)
+        elif self.projection_mode == PROJECTION.EQUATORIAL:
+            return self.equatorial_projection(x, y)
+        return None
+
+
+    def ship_projection(self, x, y):
+        proj = np.array([
+            [self.cos_longitude_of_ascending_node, -self.sin_longitude_of_ascending_node],
+            [self.sin_longitude_of_ascending_node,  self.cos_longitude_of_ascending_node]
+        ])
+        point = np.array([x, y])
+        res = np.matmul(proj, point)
+        return res[0], res[1]
+
+
+    def equatorial_projection(self, x, y):
+        _x, _y = self.ship_projection(x, y)
+        return _x * self.cos_inclination, _y
+
+
     @property
     def radius_altitude(self):
         return self.radius - PLANET_DATA[self.ref_body_name]['radius'] * 1000
@@ -111,6 +157,7 @@ class Telemetry(object):
         if self.eccentricity < 1:
             return -self.apoapsis
         return None
+
 
     @property
     def apoapsis_y(self):
@@ -138,6 +185,10 @@ class Telemetry(object):
     def inclination_deg(self):
         return np.rad2deg(self.inclination)
 
+    @property
+    @telemetry_cache('inclination')
+    def cos_inclination(self):
+        return np.cos(self.inclination)
 
     @property
     def true_anomaly_deg(self):

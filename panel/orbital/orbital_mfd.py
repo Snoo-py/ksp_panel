@@ -2,6 +2,8 @@ from panel.mfd.ksp_mfd_figure import KspMFDFigure
 from panel.orbital.ref_planet_plot import RefPlanetPlot
 from panel.orbital.hyperbole_orbit import HyperboleOrbit
 from panel.orbital.ellipse_orbit import EllipseOrbit
+from panel.telemetry.telemetry import PROJECTION
+from panel.orbital.orbital_text import ProjectionText
 
 
 
@@ -26,6 +28,7 @@ class OrbitalMFD(KspMFDFigure):
     def __init__(self, parent=None, width=5, height=5, dpi=100):
         KspMFDFigure.__init__(self, parent, width, height, dpi)
         self.display_mode_idx = 0
+        self.projection_mode = PROJECTION.SHIP
         self.show_legend = True
         self.show_orbit = True
         self.current_active_vessel_id = None
@@ -33,9 +36,12 @@ class OrbitalMFD(KspMFDFigure):
         self.ellipse_orbit_plot = EllipseOrbit(self.axes)
         self.hyperbole_orbit_plot = HyperboleOrbit(self.axes)
         self.ship_text = None
+        self.projection_text = ProjectionText(self.axes, 0.85, 0.95, color='grey',
+                                              transform=self.axes.transAxes, fontsize=14)
 
 
     def _update_mfd_data(self, telemetry):
+        telemetry.projection_mode = self.projection_mode
         if self.show_orbit:
             self.ref_planet_plot.update_ref_planet(telemetry)
             self.draw_vessel_orbit(telemetry)
@@ -43,6 +49,7 @@ class OrbitalMFD(KspMFDFigure):
             self.remove_orbit_display()
         if self.show_legend:
             self.numeric_orbit_value(telemetry)
+            self.projection_text.update_text(self.projection_mode)
         else:
             self.remove_text()
         self.axes.axis('auto')
@@ -135,4 +142,4 @@ class OrbitalMFD(KspMFDFigure):
 
 
     def handler_toggle_projection_mode(self):
-        pass
+        self.projection_mode = self.projection_mode.next()

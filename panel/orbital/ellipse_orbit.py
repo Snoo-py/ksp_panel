@@ -1,5 +1,5 @@
 from matplotlib.patches import Ellipse
-
+import numpy as np
 from panel.orbital.orbit_plot import OrbitPlot
 from panel.telemetry.telemetry import Telemetry
 from panel.telemetry.ellipse import EllipseData
@@ -9,10 +9,15 @@ from panel.telemetry.ellipse import EllipseData
 class EllipseOrbit(OrbitPlot):
 
     def _create_orbit(self, telemetry):
-        angle = telemetry.argument_of_periapsis_deg + telemetry.longitude_of_ascending_node_deg
-        self._orbit_plot = Ellipse((-telemetry.focus_x, -telemetry.focus_y),
-                                      width=telemetry.width, height=telemetry.height,
-                                      angle=angle, fill=False, color='green')
+        x, y = telemetry.projection(-telemetry.focus_x, -telemetry.focus_y)
+        x_w, y_w = telemetry.projection(telemetry.width, 0)
+        width = np.sqrt(x_w**2 + y_w**2)
+        x_h, y_h = telemetry.projection(0, telemetry.height)
+        height = np.sqrt(x_h**2 + y_h**2)
+        self._orbit_plot = Ellipse((x, y),
+                                   width=width, height=height,
+                                   angle=telemetry.longitude_of_ascending_node_deg,
+                                   fill=False, color='green')
         self._axes.add_patch(self._orbit_plot)
 
 
@@ -30,11 +35,15 @@ class EllipseOrbit(OrbitPlot):
         if not self._orbit_plot:
             self._create_orbit(telemetry)
         else:
-            angle = telemetry.argument_of_periapsis_deg + telemetry.longitude_of_ascending_node_deg
-            self._orbit_plot.center = (-telemetry.focus_x, -telemetry.focus_y)
-            self._orbit_plot.width = telemetry.width
-            self._orbit_plot.height = telemetry.height
-            self._orbit_plot.angle = angle
+            x, y = telemetry.projection(-telemetry.focus_x, -telemetry.focus_y)
+            x_w, y_w = telemetry.projection(telemetry.width, 0)
+            width = np.sqrt(x_w**2 + y_w**2)
+            x_h, y_h = telemetry.projection(0, telemetry.height)
+            height = np.sqrt(x_h**2 + y_h**2)
+            self._orbit_plot.center = (x, y)
+            self._orbit_plot.width = width
+            self._orbit_plot.height = height
+            self._orbit_plot.angle = telemetry.longitude_of_ascending_node_deg
         self._update_points(telemetry)
         telemetry.__class__ = Telemetry
 
