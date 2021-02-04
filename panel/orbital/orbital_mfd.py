@@ -1,9 +1,24 @@
+from enum import Flag, auto
 from panel.mfd.ksp_mfd_figure import KspMFDFigure
 from panel.orbital.ref_planet_plot import RefPlanetPlot
 from panel.orbital.hyperbole_orbit import HyperboleOrbit
 from panel.orbital.ellipse_orbit import EllipseOrbit
 from panel.telemetry.telemetry import PROJECTION
 from panel.orbital.orbital_text import ProjectionText, ShipOrbitalText
+
+
+class DISPLAY(Flag):
+    LEGEND = auto()
+    ORBIT = auto()
+    ALL = LEGEND | ORBIT
+
+    def next(self):
+        cls = self.__class__
+        members = list(cls)
+        index = members.index(self) + 1
+        if index >= len(members):
+            index = 0
+        return members[index]
 
 
 
@@ -23,11 +38,10 @@ class OrbitalMFD(KspMFDFigure):
         },
     }
 
-    DISPLAY_MODE = ['all', 'legend', 'orbit']
 
     def __init__(self, parent=None, width=5, height=5, dpi=100):
         KspMFDFigure.__init__(self, parent, width, height, dpi)
-        self.display_mode_idx = 0
+        self.display_mode = DISPLAY.ALL
         self.projection_mode = PROJECTION.SHIP
         self.show_legend = True
         self.show_orbit = True
@@ -43,12 +57,12 @@ class OrbitalMFD(KspMFDFigure):
 
     def _update_mfd_data(self, telemetry):
         telemetry.projection_mode = self.projection_mode
-        if self.show_orbit:
+        if DISPLAY.ORBIT in self.display_mode:
             self.ref_planet_plot.update_ref_planet(telemetry)
             self.draw_vessel_orbit(telemetry)
         else:
             self.remove_orbit_display()
-        if self.show_legend:
+        if DISPLAY.LEGEND in self.display_mode:
             self.ship_text.update_text(telemetry)
             self.projection_text.update_text(self.projection_mode)
         else:
@@ -102,17 +116,7 @@ class OrbitalMFD(KspMFDFigure):
 
 
     def handler_toggle_display_mode(self):
-        self.display_mode_idx = (self.display_mode_idx + 1) % len(self.DISPLAY_MODE)
-        mode = self.DISPLAY_MODE[self.display_mode_idx]
-        if mode == 'all':
-            self.show_legend = True
-            self.show_orbit = True
-        elif mode == 'orbit':
-            self.show_legend = False
-            self.show_orbit = True
-        elif mode == 'legend':
-            self.show_legend = True
-            self.show_orbit = False
+        self.display_mode = self.display_mode.next()
 
 
     def handler_toggle_projection_mode(self):
