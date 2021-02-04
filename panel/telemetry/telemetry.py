@@ -98,23 +98,24 @@ class Telemetry(object):
 
     @property
     def periapsis_x(self):
-        return self.periapsis * self.cos_longitude_of_periapsis
+        return self.periapsis
 
 
     @property
     def periapsis_y(self):
-        return self.periapsis * self.sin_longitude_of_periapsis
+        return 0
+
 
     @property
     def apoapsis_x(self):
         if self.eccentricity < 1:
-            return -self.apoapsis * self.cos_longitude_of_periapsis
+            return -self.apoapsis
         return None
 
     @property
     def apoapsis_y(self):
         if self.eccentricity < 1:
-            return -self.apoapsis * self.sin_longitude_of_periapsis
+            return 0
         return None
 
 
@@ -174,13 +175,19 @@ class Telemetry(object):
 
 
     @property
+    @telemetry_cache('argument_of_periapsis')
+    def sin_argument_of_periapsis(self):
+        return np.sin(self.argument_of_periapsis)
+
+
+    @property
     def vessel_x(self):
-        return self.radius * np.cos(self.true_anomaly + self.argument_of_periapsis + self.longitude_of_ascending_node)
+        return self.radius * np.cos(self.true_anomaly)
 
 
     @property
     def vessel_y(self):
-        return self.radius * np.sin(self.true_anomaly + self.argument_of_periapsis + self.longitude_of_ascending_node)
+        return self.radius * np.sin(self.true_anomaly)
 
 
     @property
@@ -200,19 +207,19 @@ class Telemetry(object):
 
     @property
     def ascending_node_x(self):
-        return self.ascending_node_radius * self.cos_longitude_of_ascending_node
+        return self.ascending_node_radius * self.cos_argument_of_periapsis
 
 
     @property
     def ascending_node_y(self):
-        return self.ascending_node_radius * self.sin_longitude_of_ascending_node
+        return -self.ascending_node_radius * self.sin_argument_of_periapsis
 
 
     @property
     def descending_node_x(self):
-        return -self.descending_node_radius * self.cos_longitude_of_ascending_node # cos(x+pi)=-cos(x)
+        return -self.descending_node_radius * self.cos_argument_of_periapsis # cos(x+pi)=-cos(x)
 
 
     @property
     def descending_node_y(self):
-        return -self.descending_node_radius * self.sin_longitude_of_ascending_node # sin(x+pi)=-sin(x)
+        return self.descending_node_radius * self.sin_argument_of_periapsis # sin(x+pi)=-sin(x)

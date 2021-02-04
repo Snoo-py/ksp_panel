@@ -13,11 +13,11 @@ class EllipseData(Telemetry):
 
     @property
     def focus_x(self):
-        return self._c * self.cos_longitude_of_periapsis
+        return self._c
 
     @property
     def focus_y(self):
-        return self._c * self.sin_longitude_of_periapsis
+        return 0
 
     @property
     def width(self):
