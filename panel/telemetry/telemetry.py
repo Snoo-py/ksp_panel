@@ -118,12 +118,17 @@ class Telemetry(object):
 
 
     def ship_projection(self, x, y):
-        proj = np.array([
+        proj_1 = np.array([
+            [self.cos_argument_of_periapsis, -self.sin_argument_of_periapsis],
+            [self.sin_argument_of_periapsis,  self.cos_argument_of_periapsis]
+        ])
+        proj_2 = np.array([
             [self.cos_longitude_of_ascending_node, -self.sin_longitude_of_ascending_node],
             [self.sin_longitude_of_ascending_node,  self.cos_longitude_of_ascending_node]
         ])
         point = np.array([x, y])
-        res = np.matmul(proj, point)
+        res = np.matmul(proj_1, point)
+        res = np.matmul(proj_2, res)
         return res[0], res[1]
 
 

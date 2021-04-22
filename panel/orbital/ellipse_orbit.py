@@ -16,7 +16,7 @@ class EllipseOrbit(OrbitPlot):
         height = np.sqrt(x_h**2 + y_h**2)
         self._orbit_plot = Ellipse((x, y),
                                    width=width, height=height,
-                                   angle=telemetry.longitude_of_ascending_node_deg,
+                                   angle=telemetry.longitude_of_ascending_node_deg + telemetry.argument_of_periapsis_deg,
                                    fill=False, color='green')
         self._axes.add_patch(self._orbit_plot)
 
@@ -43,7 +43,7 @@ class EllipseOrbit(OrbitPlot):
             self._orbit_plot.center = (x, y)
             self._orbit_plot.width = width
             self._orbit_plot.height = height
-            self._orbit_plot.angle = telemetry.longitude_of_ascending_node_deg
+            self._orbit_plot.angle = telemetry.longitude_of_ascending_node_deg + telemetry.argument_of_periapsis_deg
         self._update_points(telemetry)
         telemetry.__class__ = Telemetry
 
