@@ -132,6 +132,36 @@ class Telemetry(object):
         return _x * self.cos_inclination, _y
 
 
+    def update_from_krpc_active_vessel(self, ut, active_vessel):
+        orbit = active_vessel.orbit
+        self.ut = ut
+        self.update_from_krpc_orbit(orbit)
+        self.time_to_ascending_node = orbit.ut_at_true_anomaly(-self.argument_of_periapsis) - self.ut
+        self.time_to_descending_node = orbit.ut_at_true_anomaly(np.pi - self.argument_of_periapsis) - self.ut
+
+
+    def update_from_krpc_orbit(self, orbit):
+        self.apoapsis_altitude = orbit.apoapsis_altitude
+        self.periapsis_altitude = orbit.periapsis_altitude
+        self.eccentricity = orbit.eccentricity
+        self.time_to_apoapsis = orbit.time_to_apoapsis
+        self.time_to_periapsis = orbit.time_to_periapsis
+        self.period = orbit.period
+        self.inclination = orbit.inclination
+        self.longitude_of_ascending_node = orbit.longitude_of_ascending_node
+        self.argument_of_periapsis = orbit.argument_of_periapsis
+        self.apoapsis = orbit.apoapsis
+        self.periapsis = orbit.periapsis
+        self.ref_body_name = orbit.body.name.lower()
+        self.semi_major_axis = orbit.semi_major_axis
+        self.semi_minor_axis = orbit.semi_minor_axis
+        self.radius = orbit.radius
+        self.orbital_speed = orbit.orbital_speed
+        self.speed = orbit.speed
+        self.true_anomaly = orbit.true_anomaly
+        self.mean_anomaly = orbit.mean_anomaly
+
+
     @property
     def radius_altitude(self):
         return self.radius - PLANET_DATA[self.ref_body_name]['radius'] * 1000

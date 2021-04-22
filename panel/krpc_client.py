@@ -19,9 +19,8 @@ class KrpcClient(QObject):
         self.ksp_is_connected = False
         self.ksp_current_game_scene = None
         self.as_active_vessel = False
-        self.telemetry = Telemetry()
 
-         # initialize update timers
+        # initialize update timers
         self._short_term_scheduler = QTimer()
         self._short_term_scheduler.timeout.connect(self.short_term_processing)
         self._short_term_scheduler.start(int(0.25 * 100))
@@ -50,7 +49,6 @@ class KrpcClient(QObject):
                     self.init_telemetry()
                 else:
                     self.update_telemetry()
-                    pass
             else:
                 # otherwise, unset the active vessel and telemetry
                 self.as_active_vessel = False
@@ -63,30 +61,5 @@ class KrpcClient(QObject):
 
 
     def update_telemetry(self):
-        orbit = self.space_center.active_vessel.orbit
-        #self.telemetry['active_vessel_id'] = self.current_vessel._object_id
-        self.telemetry.ut = self.space_center.ut
-        self.telemetry.apoapsis_altitude = orbit.apoapsis_altitude
-        self.telemetry.periapsis_altitude = orbit.periapsis_altitude
-        self.telemetry.eccentricity = orbit.eccentricity
-        self.telemetry.time_to_apoapsis = orbit.time_to_apoapsis
-        self.telemetry.time_to_periapsis = orbit.time_to_periapsis
-        self.telemetry.period = orbit.period
-        self.telemetry.inclination = orbit.inclination
-        self.telemetry.longitude_of_ascending_node = orbit.longitude_of_ascending_node
-        self.telemetry.argument_of_periapsis = orbit.argument_of_periapsis
-        self.telemetry.apoapsis = orbit.apoapsis
-        self.telemetry.periapsis = orbit.periapsis
-        self.telemetry.ref_body_name = orbit.body.name.lower()
-        self.telemetry.semi_major_axis = orbit.semi_major_axis
-        self.telemetry.semi_minor_axis = orbit.semi_minor_axis
-        self.telemetry.radius = orbit.radius
-        self.telemetry.orbital_speed = orbit.orbital_speed
-        self.telemetry.speed = orbit.speed
-        self.telemetry.true_anomaly = orbit.true_anomaly
-        self.telemetry.mean_anomaly = orbit.mean_anomaly
-
-        self.telemetry.time_to_ascending_node = orbit.ut_at_true_anomaly(-self.telemetry.argument_of_periapsis) - self.telemetry.ut
-        self.telemetry.time_to_descending_node = orbit.ut_at_true_anomaly(np.pi - self.telemetry.argument_of_periapsis) - self.telemetry.ut
-
+        self.telemetry.update_from_krpc_active_vessel(self.space_center.ut, self.space_center.active_vessel)
         self.telemetry_updated.emit(self.telemetry)
