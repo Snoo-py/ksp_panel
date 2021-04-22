@@ -50,7 +50,7 @@ class OrbitalMFD(KspMFDFigure):
         self.ellipse_orbit_plot = EllipseOrbit(self.axes)
         self.hyperbole_orbit_plot = HyperboleOrbit(self.axes)
         self.ship_text = ShipOrbitalText(self.axes, 0.05, 0.95, color='green', verticalalignment='top',
-                                         transform=self.axes.transAxes, fontsize=14)
+                                         transform=self.axes.transAxes, family='monospace', fontsize=14)
         self.projection_text = ProjectionText(self.axes, 0.85, 0.95, color='grey',
                                               transform=self.axes.transAxes, fontsize=14)
 
