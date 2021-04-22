@@ -1,26 +1,21 @@
-from panel.orbital.orbital_point import PeriapsisPlot, ApoapsisPlot, AscendingPlot, DescendingPlot, AscendingDescendingLine, VesselPlot
+
+from panel.telemetry.telemetry import Telemetry
+
 
 
 class OrbitPlot(object):
-    def __init__(self, axes):
-        self._axes = axes
-        self._orbit_plot = None
-        self.periapsis_plot = PeriapsisPlot(axes)
-        self.apoapsis_plot = ApoapsisPlot(axes)
-        self.ascending_plot = AscendingPlot(axes)
-        self.descending_plot = DescendingPlot(axes)
-        self.ascending_descending = AscendingDescendingLine(axes)
-        self.vessel_plot = VesselPlot(axes)
+    def __init__(self, compute_class=Telemetry, default_class=Telemetry):
+        self._compute_class = compute_class
+        self._default_class = default_class
 
 
     def update_orbit(self, telemetry):
-        pass
+        telemetry.__class__ = self._compute_class
+        self.trajectory.update(telemetry)
+        self.points.update(telemetry)
+        telemetry.__class__ = self._default_class
 
 
     def remove(self):
-        self.periapsis_plot.remove()
-        self.apoapsis_plot.remove()
-        self.ascending_plot.remove()
-        self.descending_plot.remove()
-        self.ascending_descending.remove()
-        self.vessel_plot.remove()
+        self.trajectory.remove()
+        self.points.remove()

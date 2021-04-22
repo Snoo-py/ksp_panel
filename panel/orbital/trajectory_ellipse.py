@@ -1,14 +1,13 @@
-from matplotlib.patches import Ellipse
+
 import numpy as np
-from panel.orbital.orbit_plot import OrbitPlot
-from panel.telemetry.telemetry import Telemetry
-from panel.telemetry.ellipse import EllipseData
+from matplotlib.patches import Ellipse
+from panel.orbital.trajectory_plot import TrajectoryPlot
 
 
 
-class EllipseOrbit(OrbitPlot):
+class TrajectoryEllipse(TrajectoryPlot):
 
-    def _create_orbit(self, telemetry):
+    def _create_trajectory(self, telemetry):
         x, y = telemetry.projection(-telemetry.focus_x, -telemetry.focus_y)
         x_w, y_w = telemetry.projection(telemetry.width, 0)
         width = np.sqrt(x_w**2 + y_w**2)
@@ -21,19 +20,9 @@ class EllipseOrbit(OrbitPlot):
         self._axes.add_patch(self._orbit_plot)
 
 
-    def _update_points(self, telemetry):
-        self.periapsis_plot.update_plot(telemetry)
-        self.apoapsis_plot.update_plot(telemetry)
-        self.ascending_plot.update_plot(telemetry)
-        self.descending_plot.update_plot(telemetry)
-        self.ascending_descending.update_plot(telemetry)
-        self.vessel_plot.update_plot(telemetry)
-
-
-    def update_orbit(self, telemetry):
-        telemetry.__class__ = EllipseData
+    def update(self, telemetry):
         if not self._orbit_plot:
-            self._create_orbit(telemetry)
+            self._create_trajectory(telemetry)
         else:
             x, y = telemetry.projection(-telemetry.focus_x, -telemetry.focus_y)
             x_w, y_w = telemetry.projection(telemetry.width, 0)
@@ -44,12 +33,9 @@ class EllipseOrbit(OrbitPlot):
             self._orbit_plot.width = width
             self._orbit_plot.height = height
             self._orbit_plot.angle = telemetry.longitude_of_ascending_node_deg + telemetry.argument_of_periapsis_deg
-        self._update_points(telemetry)
-        telemetry.__class__ = Telemetry
 
 
     def remove(self):
         if self._orbit_plot:
             self._orbit_plot.remove()
         self._orbit_plot = None
-        OrbitPlot.remove(self)

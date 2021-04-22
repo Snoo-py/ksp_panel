@@ -9,7 +9,7 @@ import krpc
 
 from panel.krpc_client import KrpcClient
 from panel.telemetry.telemetry import Telemetry
-from panel.orbital.orbital_mfd import OrbitalMFD
+from panel.orbital.mfd_orbital import MFDOrbital
 from panel.mfd.ksp_mfd_button import KspMFDButton
 
 
@@ -23,7 +23,7 @@ class Interface(QMainWindow):
         QMainWindow.__init__(self)
         self.setWindowTitle("Kerbal nav")
 
-        self.orbital = OrbitalMFD(None, width=5, height=5)
+        self.orbital = MFDOrbital(None, width=5, height=5)
         self.mfd = KspMFDButton(self, self.orbital, width=7, height=7)
         self.mfd.move(0, 0)
 

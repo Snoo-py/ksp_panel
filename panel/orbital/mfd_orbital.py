@@ -1,8 +1,8 @@
 from enum import Flag, auto
 from panel.mfd.ksp_mfd_figure import KspMFDFigure
 from panel.orbital.ref_planet_plot import RefPlanetPlot
-from panel.orbital.hyperbole_orbit import HyperboleOrbit
-from panel.orbital.ellipse_orbit import EllipseOrbit
+from panel.orbital.orbit_hyperbole import OrbitHyperbole
+from panel.orbital.orbit_ellipse import OrbitEllipse
 from panel.telemetry.telemetry import PROJECTION
 from panel.orbital.orbital_text import ProjectionText, ShipOrbitalText
 
@@ -22,7 +22,7 @@ class DISPLAY(Flag):
 
 
 
-class OrbitalMFD(KspMFDFigure):
+class MFDOrbital(KspMFDFigure):
     _buttons = {
         'L1': {
             'text': 'DST',
@@ -47,8 +47,8 @@ class OrbitalMFD(KspMFDFigure):
         self.show_orbit = True
         self.current_active_vessel_id = None
         self.ref_planet_plot = RefPlanetPlot(self.axes)
-        self.ellipse_orbit_plot = EllipseOrbit(self.axes)
-        self.hyperbole_orbit_plot = HyperboleOrbit(self.axes)
+        self.ellipse_orbit_plot = OrbitEllipse(self.axes)
+        self.hyperbole_orbit_plot = OrbitHyperbole(self.axes)
         self.ship_text = ShipOrbitalText(self.axes, 0.05, 0.95, color='green', verticalalignment='top',
                                          transform=self.axes.transAxes, family='monospace', fontsize=14)
         self.projection_text = ProjectionText(self.axes, 0.85, 0.95, color='grey',
