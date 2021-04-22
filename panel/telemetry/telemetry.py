@@ -6,6 +6,7 @@ from panel.planet_data import PLANET_DATA
 
 
 
+
 class PROJECTION(bytes, Enum):
     SHIP = (0, 'SHP')
     EQUATORIAL = (1, 'EQU')
@@ -59,21 +60,14 @@ def telemetry_cache(*checks):
 
 class Telemetry(object):
     def __init__(self):
-         self.__dict__['_telemetry'] = {}
-         self.projection_mode = PROJECTION.SHIP
+        self.__dict__['_telemetry'] = {}
+        self.projection_mode = PROJECTION.SHIP
 
 
     def __getattr__(self, name):
-        dsp_str = True if name.endswith('_str') else False
-        name = name if not name.endswith('_str')  else name.replace('_str', '')
-        value = None
         if name in self._telemetry:
-            value = self._telemetry.get(name)
-        elif hasattr(self, name):
-            value = getattr(self, name)
-        if not dsp_str or not value:
-            return value
-        return self._get_value_to_string_KM(value)
+            return self._telemetry.get(name)
+        return getattr(self, name)
 
 
     def __setattr__(self, name, value):
@@ -83,7 +77,7 @@ class Telemetry(object):
             self._telemetry[name] = value
 
 
-    def _get_value_to_string_KM(self, value):
+    def str_km(self, param):
         """
         10 -> 10
         100 -> 100
@@ -94,6 +88,7 @@ class Telemetry(object):
         10,000,000 -> 10.00M
         100,000,000 -> 100.0M
         """
+        value = self.__getattr__(param)
         i_value = float(value)
         n = 1
         unit = None
